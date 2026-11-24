@@ -2,7 +2,8 @@
 
 Turns a GitHub contribution graph into a little village.
 
-![Contribution Village](village.svg)
+<img width="1100" height="180" alt="image" src="https://github.com/user-attachments/assets/a97da77c-bbe7-4407-adc5-2be175c54e88" />
+
 
 | Contributions in a day | Tile |
 | --- | --- |
@@ -45,7 +46,7 @@ jobs:
 Run it once from the **Actions** tab, then add the image to your profile README:
 
 ```markdown
-![My contribution village](village.svg)
+<img alt="Village" src="village.svg" />
 ```
 
 ### Inputs
