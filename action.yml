@@ -1,0 +1,15 @@
+name: Contribution Village
+description: Turn a GitHub contribution graph into a little village SVG.
+branding:
+  icon: home
+  color: green
+inputs:
+  username:
+    description: GitHub user whose contribution graph becomes the village.
+    default: ${{ github.repository_owner }}
+  path:
+    description: Where to write the SVG, relative to the workspace.
+    default: village.svg
+runs:
+  using: node24
+  main: village.js

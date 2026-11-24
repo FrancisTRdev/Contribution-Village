@@ -1,1 +1,64 @@
 # Contribution-Village
+
+Turns a GitHub contribution graph into a little village.
+
+![Contribution Village](village.svg)
+
+| Contributions in a day | Tile |
+| --- | --- |
+| 0 | Water |
+| 1 | Grass |
+| 2 | Tree |
+| 3-5 | House |
+| 6+ | Building (taller on busier days) |
+
+## Put it on your profile
+
+Add this workflow to your profile repository (the one named after your username) as `.github/workflows/village.yml`. It rebuilds the village every day and commits it.
+
+```yaml
+name: Village
+
+on:
+  schedule:
+    - cron: '17 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  village:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: FrancisTRdev/Contribution-Village@v1
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add village.svg
+          git diff --cached --quiet && exit 0
+          git commit -m 'Update village'
+          git push
+```
+
+Run it once from the **Actions** tab, then add the image to your profile README:
+
+```markdown
+![My contribution village](village.svg)
+```
+
+### Inputs
+
+| Input | Default | Description |
+| --- | --- | --- |
+| `username` | Repository owner | GitHub user whose contribution graph becomes the village. |
+| `path` | `village.svg` | Where to write the SVG. Missing folders are created. |
+
+## Run it locally
+
+Needs Node.js 18 or newer. There are no dependencies.
+
+```sh
+node village.js <github-username> [output.svg]
+```
