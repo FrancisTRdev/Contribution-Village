@@ -11,7 +11,8 @@ const TOWERS = [['#dfe6ee', '#f5f8fb'], ['#f0dcc0', '#faf0e2'], ['#cfd8e6', '#ea
 const SPRITES = `
 <g id="grass" fill="none" stroke="#6aa84f" stroke-width="1.4" stroke-linecap="round"><path d="M-3 0l-1-3.5M0 0v-4.5M3 0l1-3.5"/></g>
 <g id="tree"><ellipse rx="6" ry="2" fill="#000" opacity=".15"/><rect x="-1.5" y="-6" width="3" height="6" rx="1" fill="#8b5e3c"/><circle cy="-10" r="6.5"/><circle cx="-2" cy="-12" r="2.5" fill="#fff" opacity=".25"/></g>
-<g id="house"><ellipse rx="8" ry="2" fill="#000" opacity=".15"/><rect x="-6" y="-8" width="12" height="8" fill="#fbf0da"/><path d="M-8-7.5 0-15l8 7.5z"/><rect x="-1.5" y="-5" width="3" height="5" fill="#8b5e3c"/><path d="M-5-6h2.5v2.5H-5zM2.5-6H5v2.5H2.5z" fill="#ffd166"/></g>`;
+<g id="house"><ellipse rx="8" ry="2" fill="#000" opacity=".15"/><rect x="-6" y="-8" width="12" height="8" fill="#fbf0da"/><path d="M-8-7.5 0-15l8 7.5z"/><rect x="-1.5" y="-5" width="3" height="5" fill="#8b5e3c"/><path d="M-5-6h2.5v2.5H-5zM2.5-6H5v2.5H2.5z" fill="#ffd166"/></g>
+<g id="boat"><ellipse rx="8" ry="1.5" fill="#fff" opacity=".4"/><path d="M-7-3h14l-2.5 3.5h-9z"/><path d="M0-15v12" stroke="#8b5e3c"/><path d="M1-14v10h6z" fill="#fff"/><path d="M-1-11v7h-4.5z" fill="#fbf0da"/></g>`;
 
 // Command-line arguments, or the action's inputs when GitHub Actions runs this file.
 const [user = process.env.INPUT_USERNAME, out = process.env.INPUT_PATH || 'village.svg'] = process.argv.slice(2);
@@ -68,6 +69,8 @@ function render(grid) {
   const width = (weeks + 2) * S;
   const height = 9 * S;
   const count = (w, d) => grid[w]?.[d] ?? 0;
+  // Boats go on real days (not the margin) that have water to the left, right, top and bottom.
+  const roomForBoat = (w, d) => grid[w]?.[d] === 0 && !count(w - 1, d) && !count(w + 1, d) && !count(w, d - 1) && !count(w, d + 1);
 
   let land = '';
   let waves = '';
@@ -82,6 +85,8 @@ function render(grid) {
         const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([dw, dd]) => (count(w + dw, d) || count(w, d + dd) ? 0 : 7));
         land += tile(x, y, corners);
         things += sprite(n, x + S / 2, y + S * 0.75, r);
+      } else if (roomForBoat(w, d) && r(4) < 0.1) {
+        things += sprite(0, x + S / 2, y + S * 0.75, r);
       } else if (!count(w, d + 1) && r(0) < 0.12) { // no waves right behind land, where they'd peek over roofs
         waves += `M${x + 5} ${y + 10}q2.5-2.5 5 0t5 0`;
       }
@@ -114,8 +119,9 @@ function tile(x, y, [tl, tr, br, bl]) {
 }
 
 function sprite(n, cx, by, r) {
-  const jx = cx + Math.round(r(1) * 4 - 2); // nudge plants off the grid a little
+  const jx = cx + Math.round(r(1) * 4 - 2); // nudge plants and boats off the grid a little
   const jy = by + Math.round(r(2) * 4 - 2);
+  if (n === 0) return `<use href="#boat" x="${jx}" y="${jy}" fill="${pick(ROOFS, r(3))}"/>`;
   if (n === 1) return `<use href="#grass" x="${jx}" y="${jy}"/>`;
   if (n === 2) return `<use href="#tree" x="${jx}" y="${jy}" fill="${pick(LEAVES, r(3))}"/>`;
   if (n <= 5) return `<use href="#house" x="${cx}" y="${by}" fill="${pick(ROOFS, r(3))}"/>`;

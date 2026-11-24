@@ -7,7 +7,7 @@ Turns a GitHub contribution graph into a little village.
 
 | Contributions in a day | Tile |
 | --- | --- |
-| 0 | Water |
+| 0 | Water (sometimes a boat, if the tiles on all four sides are water too) |
 | 1 | Grass |
 | 2 | Tree |
 | 3-5 | House |
