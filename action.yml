@@ -10,6 +10,9 @@ inputs:
   path:
     description: Where to write the SVG, relative to the workspace.
     default: village.svg
+  token:
+    description: Token for reading the contribution graph from the GitHub API. The workflow's own token works.
+    default: ${{ github.token }}
 runs:
   using: node24
   main: village.js

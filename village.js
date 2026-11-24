@@ -15,19 +15,42 @@ const SPRITES = `
 
 // Command-line arguments, or the action's inputs when GitHub Actions runs this file.
 const [user = process.env.INPUT_USERNAME, out = process.env.INPUT_PATH || 'village.svg'] = process.argv.slice(2);
+const token = process.env.INPUT_TOKEN || process.env.GITHUB_TOKEN;
 if (!user) {
   console.error('Usage: node village.js <github-username> [output.svg]');
   process.exit(1);
 }
 
-const svg = render(await contributions(user));
+// The action always has a token, so it uses the API. Local runs without one read the public page instead.
+const grid = token ? await fromApi(user, token) : await fromPage(user);
 mkdirSync(dirname(out), { recursive: true });
-writeFileSync(out, svg);
-console.log(`Wrote ${out}`);
+writeFileSync(out, render(grid));
+console.log(`Wrote ${out} from ${token ? 'the GitHub API' : 'the public contributions page'}`);
+
+async function fromApi(user, token) {
+  const res = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      query: `query ($login: String!) {
+        user(login: $login) { contributionsCollection { contributionCalendar { weeks { contributionDays { weekday contributionCount } } } } }
+      }`,
+      variables: { login: user },
+    }),
+  });
+  const { data, errors, message } = await res.json().catch(() => ({}));
+  if (!res.ok || errors) throw new Error(`GitHub API: ${errors?.[0].message ?? message ?? res.status}`);
+  // The first week can start mid-week, so each day is placed by its weekday.
+  return data.user.contributionsCollection.contributionCalendar.weeks.map(({ contributionDays }) => {
+    const week = [];
+    for (const { weekday, contributionCount } of contributionDays) week[weekday] = contributionCount;
+    return week;
+  });
+}
 
 // Every day on github.com/users/<user>/contributions has a tooltip like
 // for="contribution-day-component-<weekday>-<week>" ...>3 contributions on ...
-async function contributions(user) {
+async function fromPage(user) {
   const res = await fetch(`https://github.com/users/${encodeURIComponent(user)}/contributions`);
   if (!res.ok) throw new Error(`GitHub returned ${res.status} for "${user}"`);
   const grid = [];

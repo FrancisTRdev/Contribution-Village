@@ -54,6 +54,7 @@ Run it once from the **Actions** tab, then add the image to your profile README:
 | --- | --- | --- |
 | `username` | Repository owner | GitHub user whose contribution graph becomes the village. |
 | `path` | `village.svg` | Where to write the SVG. Missing folders are created. |
+| `token` | The workflow's token | Used to read the graph from the GitHub GraphQL API. You don't need to set it. |
 
 ## Run it locally
 
@@ -62,3 +63,5 @@ Needs Node.js 18 or newer. There are no dependencies.
 ```sh
 node village.js <github-username> [output.svg]
 ```
+
+Without a token it reads your public contributions page, so there's nothing to set up. To read from the GitHub API like the Action does, set `GITHUB_TOKEN` to a personal access token first.
