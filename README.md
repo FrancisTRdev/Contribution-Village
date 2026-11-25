@@ -2,7 +2,7 @@
 
 Turns a GitHub contribution graph into a little village.
 
-<img width="1100" height="180" alt="image" src="https://github.com/user-attachments/assets/a97da77c-bbe7-4407-adc5-2be175c54e88" />
+<img width="1100" height="180" alt="image" src="https://github.com/user-attachments/assets/9530fc78-b53a-48c1-902d-3a80aec1fd74" />
 
 
 | Contributions in a day | Tile |
