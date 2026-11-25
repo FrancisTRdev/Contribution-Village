@@ -2,7 +2,8 @@
 
 Turns a GitHub contribution graph into a little village. When GitHub is in dark mode, it's night in the village.
 
-<img width="1100" height="180" alt="image" src="https://github.com/user-attachments/assets/9530fc78-b53a-48c1-902d-3a80aec1fd74" />
+<img alt="image" src="./village.svg" />
+<img alt="image" src="./village-dark.svg" />
 
 
 | Contributions in a day | Tile |
